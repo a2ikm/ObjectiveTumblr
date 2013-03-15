@@ -4,3 +4,4 @@
 *.xcodeproj/project.xcworkspace
 *.xcodeproj/xcuserdata
 *.xcworkspace/xcuserdata
+/build/*

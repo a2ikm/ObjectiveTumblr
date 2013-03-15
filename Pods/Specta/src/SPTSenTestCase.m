@@ -2,6 +2,7 @@
 #import "SPTSpec.h"
 #import "SPTExample.h"
 #import "SPTSenTestInvocation.h"
+#import "SPTSharedExampleGroups.h"
 #import <objc/runtime.h>
 
 @interface NSObject (SPTSenTestCase)
@@ -24,6 +25,7 @@
 }
 
 + (void)initialize {
+  [SPTSharedExampleGroups initialize];
   SPTSpec *spec = [[SPTSpec alloc] init];
   SPTSenTestCase *testCase = [[[self class] alloc] init];
   objc_setAssociatedObject(self, "SPT_spec", spec, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -56,7 +58,7 @@
   SPTExample *compiledExample = [[[self class] SPT_spec].compiledExamples objectAtIndex:index];
   fprintf(stderr, "  %s%s\n", [compiledExample.name UTF8String], compiledExample.pending ? " (pending)" : "");
   if(!compiledExample.pending) {
-    compiledExample.block();
+    ((SPTVoidBlock)compiledExample.block)();
   }
   [[[NSThread currentThread] threadDictionary] removeObjectForKey:@"SPT_currentTestCase"];
 }
@@ -112,8 +114,9 @@
         description = [NSString stringWithFormat:@"%@\n  Call Stack:\n    %@", description, [callStack componentsJoinedByString:@"\n    "]];
       }
     }
+    NSString * sanitizedDescription = [description stringByReplacingOccurrencesOfString:@"%@" withString:@"?"];
     exception = [NSException exceptionWithName:name reason:description
-                             userInfo:[[NSException failureInFile:file atLine:0 withDescription:description] userInfo]];
+                             userInfo:[[NSException failureInFile:file atLine:0 withDescription:sanitizedDescription] userInfo]];
   }
   SPTSenTestCase *currentTestCase = [[[NSThread currentThread] threadDictionary] objectForKey:@"SPT_currentTestCase"];
   [currentTestCase.SPT_run addException:exception];

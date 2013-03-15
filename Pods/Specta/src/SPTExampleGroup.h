@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <SenTestingKit/SenTestingKit.h>
 #import "SpectaTypes.h"
 
 @class
@@ -14,6 +15,7 @@
   NSMutableArray *_afterAllArray;
   NSMutableArray *_beforeEachArray;
   NSMutableArray *_afterEachArray;
+  NSMutableDictionary *_sharedExamples;
   unsigned int _exampleCount;
   unsigned int _ranExampleCount;
 }
@@ -26,13 +28,15 @@
 @property (nonatomic, retain) NSMutableArray *afterAllArray;
 @property (nonatomic, retain) NSMutableArray *beforeEachArray;
 @property (nonatomic, retain) NSMutableArray *afterEachArray;
+@property (nonatomic, retain) NSMutableDictionary *sharedExamples;
 @property (nonatomic) unsigned int exampleCount;
 @property (nonatomic) unsigned int ranExampleCount;
 
++ (void)setAsyncSpecTimeout:(NSTimeInterval)timeout;
 - (id)initWithName:(NSString *)name parent:(SPTExampleGroup *)parent root:(SPTExampleGroup *)root;
 
 - (SPTExampleGroup *)addExampleGroupWithName:(NSString *)name;
-- (SPTExample *)addExampleWithName:(NSString *)name block:(SPTVoidBlock)block;
+- (SPTExample *)addExampleWithName:(NSString *)name block:(id)block;
 
 - (void)addBeforeAllBlock:(SPTVoidBlock)block;
 - (void)addAfterAllBlock:(SPTVoidBlock)block;
